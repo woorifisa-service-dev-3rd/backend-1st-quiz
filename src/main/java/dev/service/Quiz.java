@@ -22,7 +22,6 @@ import javax.crypto.spec.IvParameterSpec;
 import dev.model.Member;
 import dev.model.Test;
 import dev.service.QuizDAO;
-import dev.util.AESCryptoUtil;
 import dev.util.DBUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,22 +29,24 @@ import lombok.extern.slf4j.Slf4j;
 public class Quiz {
 
 	public void run(String args) {
+		Login login = new Login();
+		Member member = login.printNameAndPassword();
 		String[] str = {"JAVA", "JAVASCRIPT", "REACT"};
 		String[] subjectAndType = printSubjectAndType(str);
 		printPrecautions();
 		QuizDAO test = new QuizDAO();
 		List<Test> tests = test.findBySubjectAndType(subjectAndType[0], subjectAndType[1], args);
 		int score = printTest(tests);
-		Member member = new Member(1,"신원섭","1234","서비스");
 		Score findScore = test.findScoreByNameAndSubject(member.getName(), subjectAndType[0], args);
 		if(findScore != null){
-			//test.insert~~~~;?
+			test.SetResult(score, member.getName(),subjectAndType[0]);
 		}
 		else {
 			test.updateByScore(member.getName(), subjectAndType[0], score, args);
 		}
 		String acceptance = printScoreAndAcceptance(score);
 		test.insertResult(member.getName(), score, acceptance);
+		test.printBestPlayer(args);
 
 	}
 

@@ -21,12 +21,26 @@ import dev.model.Member;
 import dev.model.Score;
 import dev.model.Test;
 //import dev.service.cloud.DBConfigurer;
-import dev.util.AESCryptoUtil;
 import dev.util.DBUtil;
 
 // DAO, Data Access Object의 줄임말
 // 실제 DB에 접근하는 역할을 별도의 클래스로 분리
 public class QuizDAO {
+
+
+	public void SetResult(int score, String person, String subject) {
+		final String insertTableQuery = "INSERT INTO SCORE (name, subject, score) VALUES (' " + person + " ', ' " + subject + " ' , ' " + score + " ');"; // 요부분 test를 사람이름 넣으면 됩니다.
+
+		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\jdbc.properties");
+		) {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(insertTableQuery);
+
+		} catch (SQLException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 
 	public void insertResult(String name, int score, String result){
@@ -92,42 +106,6 @@ public class QuizDAO {
 		}
 	}
 
-	public Member findByName(String memberName, String InputPassword, String args) {
-		
-		// 조회 SQL
-		final String selectQuery = "SELECT * FROM Member where name = ?";
-
-		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\11.java\\jdbc.properties");
-				PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
-
-			pstmt.setString(1, memberName);
-			pstmt.setString(2, InputPassword);
-
-			try (ResultSet rs = pstmt.executeQuery();) {
-				SecretKey key = AESCryptoUtil.getKey();
-				IvParameterSpec ivParameterSpec = AESCryptoUtil.getIv();
-				String specName = "AES/CBC/PKCS5Padding";
-				if (rs.next()) {
-					int id = rs.getInt("id");
-					String name = rs.getString("name");
-					String password = rs.getString("password");
-					password = AESCryptoUtil.decrypt(specName, key, ivParameterSpec, password);
-					String ban = rs.getString("ban");
-
-
-					return new Member(id, name, password, ban);
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		} catch (SQLException | IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	
 	public List<Test> findBySubjectAndType(String subject, String type, String args) {
 		List<Test> test = new ArrayList<>();
