@@ -30,19 +30,21 @@ public class QuizDAO {
 	private ResultSet resultSet;
 
 
-	public Member findByName(String memberName) {
+	public Member findByName(String memberName,String InputPassword, String args) {
 		
 		// 조회 SQL
-		final String selectQuery = "SELECT * FROM Member where name = ?";
+		final String selectQuery = "SELECT * FROM Member where name = ? and password = ?";
 
 		// try() 소괄호 내부에 작성한 JDBC 객체들은 자동으로 자원이 반납됨(close()를 명시하지 않아도 됨)
 		// JDBC 객체 이외에 자원 반납이 필요한 다른 클래스들도 동일하게 사용 가능
 		// 조건, AutoCloseable 인터페이스를 상속받은 인터페이스들만 사용 가능
 
-		try (Connection connection = DBUtil.getConnection(selectQuery);
+		try (Connection connection = DBUtil.getConnection(args);
 				PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
 
 			pstmt.setString(1, memberName);
+			pstmt.setString(2, InputPassword);
+
 
 			try (ResultSet rs = pstmt.executeQuery();) {
 				SecretKey key = AESCryptoUtil.getKey();
@@ -52,7 +54,7 @@ public class QuizDAO {
 					int id = rs.getInt("id");
 					String name = rs.getString("name");
 					String password = rs.getString("password");
-					password = AESCryptoUtil.decrypt(specName, key, ivParameterSpec, password);
+//					password = AESCryptoUtil.decrypt(specName, key, ivParameterSpec, password);
 					String ban = rs.getString("ban");
 
 
