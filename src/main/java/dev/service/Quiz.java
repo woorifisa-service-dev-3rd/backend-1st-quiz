@@ -23,12 +23,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Quiz {
 	public void run() {
-		String[] str = {"자바", "자바스크립트","리액트"};
+		String[] str = {"JAVA", "JAVASCRIPT", "REACT"};
 		String[] subjectAndType = printSubjectAndType(str);
 		System.out.println(subjectAndType);
 		QuizDAO test = new QuizDAO();
 		Connection connection = test.getConnection();
 		test.findBySubjectAndType(subjectAndType[0], subjectAndType[1], connection);
+		test.printBestPlayer(connection);
+		
 		
 	}
 
@@ -60,6 +62,8 @@ public class Quiz {
 		
 		return temp;
 	}
+	
+	
 	
 	
 	

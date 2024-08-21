@@ -99,45 +99,69 @@ public class QuizDAO {
 		// JDBC 객체 이외에 자원 반납이 필요한 다른 클래스들도 동일하게 사용 가능
 		// 조건, AutoCloseable 인터페이스를 상속받은 인터페이스들만 사용 가능
 
-		try (
-				PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
+		try (PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
 
 			pstmt.setString(1, subject);
 			pstmt.setString(2, type);
 
 			try (ResultSet rs = pstmt.executeQuery();) {
 				
-				if (rs.next()) {
+				while (rs.next()) {
 					int id = rs.getInt("id");
 					String subject_0 = rs.getString("subject");
 					String type_0 = rs.getString("type");
 					String question = rs.getString("question");
 					String answer = rs.getString("answer");
+					int time = rs.getInt("time");
 					if(Objects.equals(type_0, "객관식")) {
 						String option_1 = rs.getString("option_1");
                         String option_2 = rs.getString("option_2");
                         String option_3 = rs.getString("option_3");
                         String option_4 = rs.getString("option_4");
-                        Test testObj = new Test(id, subject_0, type_0, question, answer, option_1, option_2, option_3, option_4);
+                        
+                        Test testObj = new Test(id, subject_0, type_0, question, answer, option_1, option_2, option_3, option_4, time);
                         test.add(testObj);
 					}
 					else {
-						Test testObj = new Test(id, subject_0, type_0, question, answer, null, null, null, null);
+						Test testObj = new Test(id, subject_0, type_0, question, answer, null, null, null, null, time);
 						test.add(testObj);
 					}
 
-					System.out.println("123" + test.toString());
-					return test;
+					
+					
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
+			
+			return test;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void printBestPlayer(Connection connection) {
+		final String selectQuery = "SELECT * FROM result where result = '합격' order by score desc limit 3";
+		int count = 1;
+		try(PreparedStatement pstmt = connection.prepareStatement(selectQuery);){
+			try (ResultSet rs = pstmt.executeQuery();) {
+				while(rs.next()) {
+					System.out.println(count + "등 : " + rs.getString("name") + "(" + rs.getInt("score") + ")");
+					count ++;
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	
