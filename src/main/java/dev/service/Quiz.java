@@ -5,24 +5,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import dev.model.*;
-
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-
 import dev.model.Member;
 import dev.model.Test;
-import dev.service.QuizDAO;
-import dev.util.DBUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,7 +14,7 @@ public class Quiz {
 
 	public void run(String args) {
 		Login login = new Login();
-		Member member = login.printNameAndPassword();
+		Member member = login.printNameAndPassword(args);
 		String[] str = {"JAVA", "JAVASCRIPT", "REACT"};
 		String[] subjectAndType = printSubjectAndType(str);
 		printPrecautions();
@@ -38,18 +22,30 @@ public class Quiz {
 		List<Test> tests = test.findBySubjectAndType(subjectAndType[0], subjectAndType[1], args);
 		int score = printTest(tests);
 		Score findScore = test.findScoreByNameAndSubject(member.getName(), subjectAndType[0], args);
-		if(findScore != null){
-			test.SetResult(score, member.getName(),subjectAndType[0]);
+		if(findScore == null){
+			test.insertScore(member.getName(), subjectAndType[0], score, args);
 		}
 		else {
 			test.updateByScore(member.getName(), subjectAndType[0], score, args);
 		}
 		String acceptance = printScoreAndAcceptance(score);
-		test.insertResult(member.getName(), score, acceptance);
+		List<Score> scores = test.findScoreByName(member.getName(),args);
+		int averageScore = averageScores(scores);
+		Result findResult = test.findResultByName(member.getName(), args);
+		if(findResult == null)
+			test.insertResult(member.getName(), averageScore, acceptance, args);
+		else test.updateByResult(member.getName(), averageScore, args);
 		test.printBestPlayer(args);
 
 	}
 
+	private int averageScores(List<Score> scores){
+		int totalScore = 0;
+		for(Score score : scores){
+			totalScore += score.getScore();
+		}
+		return totalScore/scores.size();
+	}
 
 	private String printScoreAndAcceptance(int score){
 		String accep = "합격";

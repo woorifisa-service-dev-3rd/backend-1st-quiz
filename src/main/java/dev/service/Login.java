@@ -7,7 +7,7 @@ import dev.util.PasswordHashing;
 
 public class Login {
 	
-	public Member printNameAndPassword(){
+	public Member printNameAndPassword(String args){
 		Scanner sc = new Scanner(System.in);
 		Member member;
 		PasswordHashing hasher = new PasswordHashing();
@@ -21,7 +21,7 @@ public class Login {
 			String hashedPassword = hasher.hashPassword(password);
 			System.out.println(hashedPassword);
 			LoginDAO dao = new LoginDAO();
-			member = dao.findByName(name, hashedPassword);
+			member = dao.findByName(name, hashedPassword, args);
 			
 			if (member==null) {   
 				System.out.println("서비스반에 없는 학생입니다 : (");

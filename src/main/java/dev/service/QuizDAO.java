@@ -18,6 +18,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 import dev.model.Member;
+import dev.model.Result;
 import dev.model.Score;
 import dev.model.Test;
 //import dev.service.cloud.DBConfigurer;
@@ -27,25 +28,97 @@ import dev.util.DBUtil;
 // 실제 DB에 접근하는 역할을 별도의 클래스로 분리
 public class QuizDAO {
 
+	public void updateByResult(String memberName, int score, String args) {
+		// 조회 SQL
+		final String selectQuery = "UPDATE Result set score = ? where name = ?";
 
-	public void SetResult(int score, String person, String subject) {
-		final String insertTableQuery = "INSERT INTO SCORE (name, subject, score) VALUES (' " + person + " ', ' " + subject + " ' , ' " + score + " ');"; // 요부분 test를 사람이름 넣으면 됩니다.
+		try (Connection connection = DBUtil.getConnection(args);
+			 PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
+			pstmt.setInt(1, score);
+			pstmt.setString(2, memberName);
+			pstmt.executeUpdate();
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\jdbc.properties");
-		) {
-			Statement statement = connection.createStatement();
-			statement.executeUpdate(insertTableQuery);
+	public Result findResultByName(String memberName, String args) {
+
+		// 조회 SQL
+		final String selectQuery = "SELECT * FROM Result where name = ?";
+		try (Connection connection = DBUtil.getConnection(args);
+			 PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
+
+			pstmt.setString(1, memberName);
+
+			try (ResultSet rs = pstmt.executeQuery();) {
+				if (rs.next()) {
+					int id = rs.getInt("id");
+					String name = rs.getString("name");
+					int score = rs.getInt("score");
+					String result = rs.getString("result");
+					return new Result(id, name, score, result);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		} catch (SQLException | IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
+	public List<Score> findScoreByName(String memberName, String args) {
+
+		// 조회 SQL
+		final String selectQuery = "SELECT * FROM Score where name = ?";
+		List<Score> scores = new ArrayList<>();
+		try (Connection connection = DBUtil.getConnection(args);
+			 PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
+
+			pstmt.setString(1, memberName);
+
+			try (ResultSet rs = pstmt.executeQuery();) {
+				while (rs.next()) {
+					int id = rs.getInt("id");
+					String name = rs.getString("name");
+					String subject = rs.getString("subject");
+					int score = rs.getInt("score");
+					scores.add(new Score(id, name, subject, score));
+				}
+				return scores;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void insertScore( String person,  String subject, int score, String args){
+		final String insertTableQuery = "INSERT INTO Score (name, subject, score) VALUES (?,?,?);"; // 요부분 test를 사람이름 넣으면 됩니다.
+		try (Connection connection = DBUtil.getConnection(args);
+			 PreparedStatement pstmt = connection.prepareStatement(insertTableQuery);) {
+			pstmt.setString(1, person);
+			pstmt.setString(2, subject);
+			pstmt.setInt(3, score);
+
+			pstmt.executeUpdate();
+		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 
-	public void insertResult(String name, int score, String result){
-		final String Query = "INSERT INTO result(name, score, result) value(?,?,?)";
-		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\11.java\\jdbc.properties");
+	public void insertResult(String name, int score, String result, String args){
+		final String Query = "INSERT INTO Result(name, score, result) value(?,?,?)";
+		try (Connection connection = DBUtil.getConnection(args);
 			 PreparedStatement pstmt = connection.prepareStatement(Query);) {
 			pstmt.setString(1, name);
 			pstmt.setInt(2, score);
@@ -61,7 +134,7 @@ public class QuizDAO {
 
 		// 조회 SQL
 		final String selectQuery = "SELECT * FROM Score where name = ? and subject = ?";
-		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\11.java\\jdbc.properties");
+		try (Connection connection = DBUtil.getConnection(args);
 			 PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
 
 			pstmt.setString(1, memberName);
@@ -88,14 +161,12 @@ public class QuizDAO {
 		return null;
 	}
 
-
-
 	public void updateByScore(String memberName, String subject, int score, String args) {
 
 		// 조회 SQL
-		final String selectQuery = "UPDATE score set score = ? where name = ? and subject = ?";
+		final String selectQuery = "UPDATE Score set score = ? where name = ? and subject = ?";
 
-		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\11.java\\jdbc.properties");
+		try (Connection connection = DBUtil.getConnection(args);
 			 PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
 			pstmt.setInt(1, score);
 			pstmt.setString(2, memberName);
@@ -115,7 +186,7 @@ public class QuizDAO {
 		// try() 소괄호 내부에 작성한 JDBC 객체들은 자동으로 자원이 반납됨(close()를 명시하지 않아도 됨)
 		// JDBC 객체 이외에 자원 반납이 필요한 다른 클래스들도 동일하게 사용 가능
 		// 조건, AutoCloseable 인터페이스를 상속받은 인터페이스들만 사용 가능
-		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\11.java\\jdbc.properties");
+		try (Connection connection = DBUtil.getConnection(args);
 				PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
 
 			pstmt.setString(1, subject);
@@ -143,9 +214,6 @@ public class QuizDAO {
 						Test testObj = new Test(id, subject_0, type_0, question, answer, null, null, null, null, time);
 						test.add(testObj);
 					}
-
-
-					
 				}
 				return test;
 
@@ -160,9 +228,9 @@ public class QuizDAO {
 	}
 	
 	public void printBestPlayer(String args) {
-		final String selectQuery = "SELECT * FROM result where result = '합격' order by score desc limit 3";
+		final String selectQuery = "SELECT * FROM Result order by score desc, name asc limit 3";
 		int count = 1;
-		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\11.java\\jdbc.properties");
+		try (Connection connection = DBUtil.getConnection(args);
 			 PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
 			try (ResultSet rs = pstmt.executeQuery();) {
 				while(rs.next()) {
@@ -178,12 +246,6 @@ public class QuizDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}
-	
-	
-
-
 }
 
