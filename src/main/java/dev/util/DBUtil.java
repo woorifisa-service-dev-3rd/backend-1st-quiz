@@ -18,7 +18,7 @@ public class DBUtil {
 			final String PASSWORD = properties.getProperty("PASSWORD");
 			final String DB_URL = properties.getProperty("DB_URL");
 			final String DATABASE = properties.getProperty("DATABASE");
-			
+
 
 			return DriverManager.getConnection(DB_URL + DATABASE, USER_NAME, PASSWORD);
 		} catch (SQLException e) {
