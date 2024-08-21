@@ -28,10 +28,20 @@ import dev.util.DBUtil;
 // 실제 DB에 접근하는 역할을 별도의 클래스로 분리
 public class QuizDAO {
 
-	// JDK 7버전 이전 방식
-	private Connection connection;
-	private Statement statement;
-	private ResultSet resultSet;
+
+	public void insertResult(String name, int score, String result){
+		final String Query = "INSERT INTO result(name, score, result) value(?,?,?)";
+		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\11.java\\jdbc.properties");
+			 PreparedStatement pstmt = connection.prepareStatement(Query);) {
+			pstmt.setString(1, name);
+			pstmt.setInt(2, score);
+			pstmt.setString(3, result);
+			pstmt.executeUpdate();
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 
 	public Score findScoreByNameAndSubject(String memberName, String subjectInput, String args) {
 
@@ -130,7 +140,6 @@ public class QuizDAO {
 		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\11.java\\jdbc.properties");
 				PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
 
-
 			pstmt.setString(1, subject);
 			pstmt.setString(2, type);
 
@@ -149,7 +158,7 @@ public class QuizDAO {
                         String option_2 = rs.getString("option_2");
                         String option_3 = rs.getString("option_3");
                         String option_4 = rs.getString("option_4");
-                        Test testObj = new Test(id, subject_0, type_0, question, answer, option_1, option_2, option_3, option_4, time);
+						Test testObj = new Test(id, subject_0, type_0, question, answer, option_1, option_2, option_3, option_4, time);
                         test.add(testObj);
 					}
 					else {
@@ -157,6 +166,8 @@ public class QuizDAO {
 						test.add(testObj);
 					}
 
+
+					
 				}
 				return test;
 
@@ -168,6 +179,29 @@ public class QuizDAO {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public void printBestPlayer(String args) {
+		final String selectQuery = "SELECT * FROM result where result = '합격' order by score desc limit 3";
+		int count = 1;
+		try (Connection connection = DBUtil.getConnection("C:\\woori_workspace\\11.java\\jdbc.properties");
+			 PreparedStatement pstmt = connection.prepareStatement(selectQuery);) {
+			try (ResultSet rs = pstmt.executeQuery();) {
+				while(rs.next()) {
+					System.out.println(count + "등 : " + rs.getString("name") + "(" + rs.getInt("score") + ")");
+					count ++;
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} catch (SQLException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	

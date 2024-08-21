@@ -28,8 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Quiz {
+
 	public void run(String args) {
-		String[] str = { "JAVA", "JAVASCRIPT", "REACT" };
+		String[] str = {"JAVA", "JAVASCRIPT", "REACT"};
 		String[] subjectAndType = printSubjectAndType(str);
 		printPrecautions();
 		QuizDAO test = new QuizDAO();
@@ -43,17 +44,22 @@ public class Quiz {
 		else {
 			test.updateByScore(member.getName(), subjectAndType[0], score, args);
 		}
-		printScoreAndAcceptance(score);
+		String acceptance = printScoreAndAcceptance(score);
+		test.insertResult(member.getName(), score, acceptance);
+
 	}
 
 
-	private void printScoreAndAcceptance(int score){
+	private String printScoreAndAcceptance(int score){
+		String accep = "합격";
 		if(score >= 60){
 			System.out.println("축하합니다. 시험에 합격하셨습니다~~");
 		} else{
 			System.out.println("시험에 불합격 하셨습니다. 좀 더 노력하세요!");
+			accep = "불합격";
 		}
 		System.out.println("점수는 " + score +"점 입니다.");
+		return accep;
 	}
 
 	private String[] printSubjectAndType(String[] sb){
@@ -144,6 +150,8 @@ public class Quiz {
 		}
 		return (int)Math.round(score);
 	}
+	
+	
 	
 	
 	
