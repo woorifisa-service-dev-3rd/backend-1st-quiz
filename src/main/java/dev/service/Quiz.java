@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Scanner;
 
-import dev.model.Member;
-import dev.model.Test;
+import dev.model.*;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,14 +34,29 @@ public class Quiz {
 		printPrecautions();
 		QuizDAO test = new QuizDAO();
 		List<Test> tests = test.findBySubjectAndType(subjectAndType[0], subjectAndType[1], args);
-//		System.out.println(tests);
-//		List<Test> tests = findBySubjectAndType(subjectAndType[0],subjectAndType[1], args);
 		int score = printTest(tests);
-		System.out.println(score);
+		Member member = new Member(1,"신원섭","1234","서비스");
+		Score findScore = test.findScoreByNameAndSubject(member.getName(), subjectAndType[0], args);
+		if(findScore != null){
+			//test.insert~~~~;?
+		}
+		else {
+			test.updateByScore(member.getName(), subjectAndType[0], score, args);
+		}
+		printScoreAndAcceptance(score);
 	}
 
 
-	private String[] printSubjectAndType(String sb[]){
+	private void printScoreAndAcceptance(int score){
+		if(score >= 60){
+			System.out.println("축하합니다. 시험에 합격하셨습니다~~");
+		} else{
+			System.out.println("시험에 불합격 하셨습니다. 좀 더 노력하세요!");
+		}
+		System.out.println("점수는 " + score +"점 입니다.");
+	}
+
+	private String[] printSubjectAndType(String[] sb){
 		String[] temp = new String[2];
 		Scanner sc = new Scanner(System.in);
 		System.out.println("시험 과목을 선택해 주세요.");
