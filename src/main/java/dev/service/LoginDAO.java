@@ -11,7 +11,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 import dev.model.Member;
-import dev.util.AESCryptoUtil;
 import dev.util.DBUtil;
 
 public class LoginDAO {

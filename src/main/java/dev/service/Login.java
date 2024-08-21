@@ -19,7 +19,6 @@ public class Login {
 			// 입력 받은 password를 단방향 암호화 해시 처리한다
 			String password = sc.nextLine();
 			String hashedPassword = hasher.hashPassword(password);
-			
 			LoginDAO dao = new LoginDAO();
 			member = dao.findByName(name, hashedPassword);
 			
@@ -32,7 +31,6 @@ public class Login {
 				break;
 			} 
 		}
-		System.out.println("프로젝트가 끝났습니다");
 		return member;
 	}
 }
