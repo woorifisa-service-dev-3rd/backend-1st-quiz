@@ -1,7 +1,9 @@
 package dev.model;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
+@AllArgsConstructor
 public class Test {
 	private int id;
 	private String subject;
@@ -74,4 +76,9 @@ public class Test {
 		this.time = time;
 	}
 	
+	@Override
+	public String toString() {
+		return "Todo [id=" + id + ", subject=" + subject + ", type=" + type + ", question=" + question
+				+ ", answer=" + answer + "]";
+	}
 }

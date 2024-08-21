@@ -6,23 +6,46 @@ import java.util.Scanner;
 
 import dev.model.Member;
 import dev.model.Test;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+
+import dev.model.Member;
+import dev.model.Test;
+import dev.service.QuizDAO;
+import dev.util.AESCryptoUtil;
+import dev.util.DBUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Quiz {
 	public void run(String args) {
-		String[] str = { "자바", "자바스크립트", "리액트" };
+		String[] str = { "JAVA", "JAVASCRIPT", "REACT" };
 		String[] subjectAndType = printSubjectAndType(str);
 		printPrecautions();
+		QuizDAO test = new QuizDAO();
+		List<Test> tests = test.findBySubjectAndType(subjectAndType[0], subjectAndType[1], args);
+//		System.out.println(tests);
 //		List<Test> tests = findBySubjectAndType(subjectAndType[0],subjectAndType[1], args);
-//		printTest(tests);
+		int score = printTest(tests);
+		System.out.println(score);
 	}
 
-	private String[] printSubjectAndType(String sb[]) {
+
+	private String[] printSubjectAndType(String sb[]){
 		String[] temp = new String[2];
 		Scanner sc = new Scanner(System.in);
 		System.out.println("시험 과목을 선택해 주세요.");
-		while (true) {
+		while(true) {
 			System.out.println(sb[0] + ", " + sb[1] + ", " + sb[2]);
 			String subject = sc.nextLine();
 			if (subject.equals(sb[0]) || subject.equals(sb[1]) || subject.equals(sb[2])) {
@@ -33,10 +56,11 @@ public class Quiz {
 			}
 		}
 		System.out.println("시험 유형을 선택해 주세요.");
-		while (true) {
+
+		while(true){
 			System.out.println("4지선다, OX문제, 단답형");
 			String type = sc.nextLine().trim();
-			if (type.equals("4지선다") || type.equals("OX문제") || type.equals("단답형")) {
+			if(type.equals("4지선다") || type.equals("OX문제") || type.equals("단답형")){
 				temp[1] = type;
 				break;
 			} else {
@@ -50,17 +74,23 @@ public class Quiz {
 		System.out.println("※주의사항※");
 		System.out.println("각 문제당 제한시간이 설정되어 있습니다.");
 		System.out.println("제한시간이 지나면 감점이 되니 주의해 주세요!");
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	private void printTest(List<Test> tests) {
-		int score = 0;
-		int testScore = 100 / tests.size();
+	private int printTest(List<Test> tests) {
+		double score = 0;
+		double testScore = 100.0 / tests.size();
 		Scanner sc = new Scanner(System.in);
 		for (Test test : tests) {
 			long startTime = System.currentTimeMillis();
 			String input;
 			while (true) {
-				System.out.println(test.getQuestion() + " (" + test.getType() + ")");
+				System.out.println(test.getQuestion() + " (" + test.getType() + " " + test.getTime()+"초)");
 				if (test.getType().equals("4지선다")) {
 					System.out.println("1번 : " + test.getOption_1());
 					System.out.println("2번 : " + test.getOption_2());
@@ -76,20 +106,31 @@ public class Quiz {
 					input = sc.nextLine();
 					if (input.equals("O") || input.equals("X")) {
 						break;
+					}else {
+						System.out.println("정확한 문자를 입력 해 주세요.");
 					}
 				} else {
 					input = sc.nextLine();
-					if (!input.trim().equals(""))
+					if (!input.trim().equals("")) {
 						break;
+					}else {
+						System.out.println("정확한 문자를 입력 해 주세요.");
+					}
 				}
 			}
 			long endTime = System.currentTimeMillis();
 			if (test.getAnswer().equals(input)) {
-				if ((startTime - endTime) / 1000 > test.getTime()) {
+				System.out.println(test.getTime()+"초 중 "+(endTime - startTime) / 1000 + "초 지났습니다.");
+				if ((endTime - startTime) / 1000 > test.getTime()) {
 					score += testScore/2;
 				}
 				else score += testScore;
 			}
 		}
+		return (int)Math.round(score);
 	}
+	
+	
+	
+	
 }
