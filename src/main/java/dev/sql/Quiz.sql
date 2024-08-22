@@ -35,14 +35,13 @@ create table Score(
     CONSTRAINT member_id FOREIGN KEY (id) REFERENCES Member(id)
 );
 
-INSERT INTO Member (id, name, password, ban) VALUES
-    (1, "신원섭", "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4", "서비스");
-    (2, "구자빈", "38083c7ee9121e17401883566a148aa5c2e2d55dc53bc4a94a026517dbff3c6b", "서비스"),
-    (3, "곽지은", "ceaa28bba4caba687dc31b1bbe79eca3c70c33f871f1ce8f528cf9ab5cfd76dd", "서비스"),
-    (4, "박준현", "db2e7f1bd5ab9968ae76199b7cc74795ca7404d5a08d78567715ce532f9d2669", "서비스"),
-    (5, "김영성", "f8638b979b2f4f793ddb6dbd197e0ee25a7a6ea32b0ae22f5e3c5d119d839e75", "서비스"),
-    (6, "이명렬", "499bc7df9d8873c1c38e6898177c343b2a34d2eb43178a9eb4efcb993366c8cd", "서비스"),
-    (7, "홍찬의", "6a95bbab63d587b596398c4bd7e91a132f24032d2007d107e5ea71967724b092", "서비스");
+INSERT INTO Member (name, password, ban) VALUES ("신원섭", "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4", "서비스");
+INSERT INTO Member (name, password, ban) VALUES ("구자빈", "38083c7ee9121e17401883566a148aa5c2e2d55dc53bc4a94a026517dbff3c6b", "서비스");
+INSERT INTO Member (name, password, ban) VALUES ("곽지은", "ceaa28bba4caba687dc31b1bbe79eca3c70c33f871f1ce8f528cf9ab5cfd76dd", "서비스");
+INSERT INTO Member (name, password, ban) VALUES ("박준현", "db2e7f1bd5ab9968ae76199b7cc74795ca7404d5a08d78567715ce532f9d2669", "서비스");
+INSERT INTO Member (name, password, ban) VALUES ("김영성", "f8638b979b2f4f793ddb6dbd197e0ee25a7a6ea32b0ae22f5e3c5d119d839e75", "서비스");
+INSERT INTO Member (name, password, ban) VALUES ("이명렬", "499bc7df9d8873c1c38e6898177c343b2a34d2eb43178a9eb4efcb993366c8cd", "서비스");
+INSERT INTO Member (name, password, ban) VALUES ("홍찬의", "6a95bbab63d587b596398c4bd7e91a132f24032d2007d107e5ea71967724b092", "서비스");
 
 INSERT INTO Test (ID, SUBJECT, TYPE, QUESTION, ANSWER, OPTION_1, OPTION_2, OPTION_3, OPTION_4, TIME) VALUES (1, "JAVA", "4지선다", "자바의 특징이 아닌것은?", "4", "자료 추상화", "상속", "동적 바인딩", "	절차적 프로그래밍", 10);
 INSERT INTO Test (ID, SUBJECT, TYPE, QUESTION, ANSWER, OPTION_1, OPTION_2, OPTION_3, OPTION_4, TIME) VALUES (2, "JAVA", "4지선다", "접근제어자가 아닌것은?", "4", "privated", "public", "protected", "	selected", 20);
