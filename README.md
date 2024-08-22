@@ -49,5 +49,18 @@
 2) Quiz jar 파일과 jdbc.properties 파일을 하나의 폴더에 두고 그 폴더를 경로로 cmd 켠다
 3) cmd에 java -jar Quiz.jar jdbc.properties 명령어 입력하면 실행된다
 
-![image](https://github.com/user-attachments/assets/04e7b433-bf50-443f-8e23-3f6210806e3a)
+####입력 값
+| id  | name   | password |
+| --- | ------ | -------- |
+| 1   | 신원섭 | 1234     |
+| 2   | 구자빈 | 2345     |
+| 3   | 곽지은 | 3456     |
+| 4   | 박준현 | 4567     |
+| 5   | 김영성 | 5678     |
+| 6   | 이명렬 | 6789     |
+| 7   | 홍찬의 | 7890     |
+
+####실행 이미지
+![image](https://github.com/user-attachments/assets/6b37aaf5-a9a6-4397-9d8e-297960fe7111)
+
 
