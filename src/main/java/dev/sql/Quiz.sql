@@ -31,7 +31,7 @@ create table Score(
 	id INT primary key AUTO_INCREMENT,
     name varchar(50) not null,
     subject varchar(50) not null,
-    score INT not null,
+    score INT not null
 );
 
 INSERT INTO Member (name, password, ban) VALUES ("신원섭", "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4", "서비스");
